@@ -1,0 +1,9 @@
+name: DungeonMobs
+version: '${project.version}'
+main: ezcoins.dungeonmobs.DungeonMobs
+api-version: 1.19
+commands:
+  dungeonMobs:
+    description: Spawn mob yes?.
+    usage: /<command>
+
