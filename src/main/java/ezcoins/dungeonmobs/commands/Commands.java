@@ -13,8 +13,8 @@ public class Commands implements CommandExecutor {
 
             } else if (args[0].equalsIgnoreCase("spawn")) {
                 Player player = (Player) sender;
-                ZombieMob zombieMob = new ZombieMob();
-                zombieMob.spawnMob(player.getLocation());
+                ZombieMob zombieMob = new ZombieMob(player.getLocation(), player);
+                zombieMob.spawnMob();
             }
         }
         return true;

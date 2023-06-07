@@ -18,7 +18,7 @@ public class ParticleCircleUpwards extends BukkitRunnable {
         this.zombie = zombie;
         this.height = height;
         this.radius = radius;
-        this.durationTicks = durationSeconds * 20; // Convert seconds to ticks
+        this.durationTicks = durationSeconds * 20;
         this.elapsedTicks = 0;
     }
 
@@ -42,16 +42,16 @@ public class ParticleCircleUpwards extends BukkitRunnable {
 
             Location haloLocation = particleLocation.clone().add(x, 0, z);
 
-            // Spawn particle at the calculated location
+
             haloLocation.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, haloLocation, 1);
 
-            angle += Math.PI / 8; // Adjust the angle increment for the desired density of particles
+            angle += Math.PI / 8;
         }
 
         elapsedTicks++;
     }
 
     public void start() {
-        this.runTaskTimer(DungeonMobs.plugin, 0, 1); // Run the task every tick
+        this.runTaskTimer(DungeonMobs.plugin, 0, 1);
     }
 }

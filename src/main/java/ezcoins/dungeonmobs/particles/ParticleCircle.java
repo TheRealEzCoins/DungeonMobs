@@ -16,7 +16,7 @@ public class ParticleCircle extends BukkitRunnable {
     public ParticleCircle(Player player, double maxRadius, int durationSeconds) {
         this.location = player.getLocation();
         this.maxRadius = maxRadius;
-        this.durationTicks = durationSeconds * 20; // Convert seconds to ticks (assuming 20 ticks per second)
+        this.durationTicks = durationSeconds * 20;
         this.radius = 0.0;
         this.particle = Particle.CLOUD;
     }
@@ -24,7 +24,7 @@ public class ParticleCircle extends BukkitRunnable {
     public ParticleCircle(Location location, double maxRadius, int durationSeconds) {
         this.location = location;
         this.maxRadius = maxRadius;
-        this.durationTicks = durationSeconds * 20; // Convert seconds to ticks (assuming 20 ticks per second)
+        this.durationTicks = durationSeconds * 20;
         this.radius = 0.0;
         this.particle = Particle.CLOUD;
     }
@@ -32,7 +32,7 @@ public class ParticleCircle extends BukkitRunnable {
     public ParticleCircle(Location location, Particle particle, double maxRadius, int durationSeconds) {
         this.location = location;
         this.maxRadius = maxRadius;
-        this.durationTicks = durationSeconds * 20; // Convert seconds to ticks (assuming 20 ticks per second)
+        this.durationTicks = durationSeconds * 20;
         this.radius = 0.0;
         this.particle = particle;
     }
@@ -54,10 +54,10 @@ public class ParticleCircle extends BukkitRunnable {
             center.getWorld().spawnParticle(this.particle, particleLocation, 1);
         }
 
-        radius += (maxRadius / durationTicks) * 3; // Increase radius by 3 blocks per second
+        radius += (maxRadius / durationTicks) * 3;
     }
 
     public void start() {
-        this.runTaskTimer(DungeonMobs.plugin, 0, 1); // Run the task every tick
+        this.runTaskTimer(DungeonMobs.plugin, 0, 1);
     }
 }

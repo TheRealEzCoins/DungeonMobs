@@ -18,7 +18,7 @@ public class ParticleSquare extends BukkitRunnable {
         this.player = player;
         this.squareSize = squareSize;
         this.particleDensity = particleDensity;
-        this.durationTicks = durationSeconds * 20; // Convert seconds to ticks
+        this.durationTicks = durationSeconds * 20;
         this.elapsedTicks = 0;
     }
 
@@ -31,13 +31,11 @@ public class ParticleSquare extends BukkitRunnable {
 
         Location headLocation = player.getEyeLocation();
 
-        // Calculate the corner locations of the square
         Location corner1 = headLocation.clone().add(-squareSize, 0, squareSize);
         Location corner2 = headLocation.clone().add(squareSize, 0, squareSize);
         Location corner3 = headLocation.clone().add(squareSize, 0, -squareSize);
         Location corner4 = headLocation.clone().add(-squareSize, 0, -squareSize);
 
-        // Spawn particles along the edges of the square
         spawnLineParticles(corner1, corner2);
         spawnLineParticles(corner2, corner3);
         spawnLineParticles(corner3, corner4);
@@ -46,7 +44,6 @@ public class ParticleSquare extends BukkitRunnable {
         elapsedTicks++;
     }
 
-    // Helper method to spawn particles along a line between two locations
     private void spawnLineParticles(Location start, Location end) {
         double distance = start.distance(end);
         double particles = distance * particleDensity;
@@ -61,6 +58,6 @@ public class ParticleSquare extends BukkitRunnable {
     }
 
     public void start() {
-        this.runTaskTimer(DungeonMobs.plugin, 0, 1); // Run the task every tick
+        this.runTaskTimer(DungeonMobs.plugin, 0, 1);
     }
 }

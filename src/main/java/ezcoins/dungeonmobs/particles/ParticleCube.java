@@ -17,7 +17,7 @@ public class ParticleCube extends BukkitRunnable {
         this.location = player.getLocation();
         this.cubeSize = cubeSize;
         this.particleDensity = particleDensity;
-        this.durationTicks = durationSeconds * 20; // Convert seconds to ticks
+        this.durationTicks = durationSeconds * 20;
         this.elapsedTicks = 0;
     }
 
@@ -25,7 +25,7 @@ public class ParticleCube extends BukkitRunnable {
         this.location = location;
         this.cubeSize = cubeSize;
         this.particleDensity = particleDensity;
-        this.durationTicks = durationSeconds * 20; // Convert seconds to ticks
+        this.durationTicks = durationSeconds * 20;
         this.elapsedTicks = 0;
     }
 
@@ -38,7 +38,6 @@ public class ParticleCube extends BukkitRunnable {
 
         Location centerLocation = location;
 
-        // Calculate the corner locations of the cube
         Location corner1 = centerLocation.clone().add(-cubeSize, cubeSize, -cubeSize);
         Location corner2 = centerLocation.clone().add(cubeSize, cubeSize, -cubeSize);
         Location corner3 = centerLocation.clone().add(cubeSize, -cubeSize, -cubeSize);
@@ -48,7 +47,6 @@ public class ParticleCube extends BukkitRunnable {
         Location corner7 = centerLocation.clone().add(cubeSize, -cubeSize, cubeSize);
         Location corner8 = centerLocation.clone().add(-cubeSize, -cubeSize, cubeSize);
 
-        // Spawn particles along the edges of the cube
         spawnLineParticles(corner1, corner2);
         spawnLineParticles(corner2, corner3);
         spawnLineParticles(corner3, corner4);
@@ -67,7 +65,6 @@ public class ParticleCube extends BukkitRunnable {
         elapsedTicks++;
     }
 
-    // Helper method to spawn particles along a line between two locations
     private void spawnLineParticles(Location start, Location end) {
         double distance = start.distance(end);
         double particles = distance * particleDensity;
