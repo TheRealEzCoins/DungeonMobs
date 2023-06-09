@@ -21,7 +21,19 @@ public class SphereAttack {
     }
 
 
-    public void trigger() {
+    public void startEvent(long startInSeconds, long delayInSeconds) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (livingEntity.isValid()) {
+                    SphereAttack sphereAttack = new SphereAttack(livingEntity);
+                    sphereAttack.createEvent();
+                }
+            }
+        }.runTaskTimer(DungeonMobs.plugin, startInSeconds * 20, delayInSeconds * 20);
+    }
+    public void createEvent() {
+        if(livingEntity.isDead()) return;
         livingEntity.setAI(false);
         ParticleCircle particleCircle = new ParticleCircle(livingEntity.getLocation(), Particle.CRIT ,10, 5);
         particleCircle.start();
@@ -32,12 +44,13 @@ public class SphereAttack {
             @Override
             public void run() {
                 if(time >= 10) {
+                    livingEntity.setAI(true);
                     cancel();
                 }
                 time++;
                 for(Player player : getNearbyPlayers(time)) {
                     if(!playerHurtList.contains(player)) {
-                        player.setHealth(time);
+                        player.setHealth(player.getHealth() - (time * 1.5));
                         player.damage(1, livingEntity);
                         player.setHurtDirection(1f);
                         playerHurtList.add(player);
@@ -62,4 +75,5 @@ public class SphereAttack {
                 .map(entity -> (Player) entity)
                 .collect(Collectors.toList());
     }
+
 }

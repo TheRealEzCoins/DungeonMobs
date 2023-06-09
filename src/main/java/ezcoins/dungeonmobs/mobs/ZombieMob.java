@@ -3,11 +3,8 @@ package ezcoins.dungeonmobs.mobs;
 import com.google.common.io.MoreFiles;
 import dev.dbassett.skullcreator.SkullCreator;
 import ezcoins.dungeonmobs.DungeonMobs;
-import ezcoins.dungeonmobs.abilities.ShootLazer;
-import ezcoins.dungeonmobs.abilities.SphereAttack;
-import ezcoins.dungeonmobs.abilities.VortexPull;
+import ezcoins.dungeonmobs.abilities.*;
 import ezcoins.dungeonmobs.particles.ParticleCircle;
-import ezcoins.dungeonmobs.abilities.BeaconAbility;
 import ezcoins.dungeonmobs.particles.ParticleCircleUpwards;
 import ezcoins.dungeonmobs.particles.ParticleCube;
 import ezcoins.dungeonmobs.tasks.HealthBar;
@@ -64,32 +61,15 @@ public class ZombieMob {
         zombie.setShouldBurnInDay(false);
         zombie.setAI(false);
         zombie.setAdult();
-        AttributeInstance knockbackResistance = zombie.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE);
-        AttributeInstance speed = zombie.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
-        AttributeInstance health = zombie.getAttribute(Attribute.GENERIC_MAX_HEALTH);
-        AttributeInstance damage = zombie.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE);
-        AttributeInstance atkspeed = zombie.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
-        if (knockbackResistance != null) {
-            knockbackResistance.setBaseValue(1.0);
-        }
-        if (speed != null) {
-            speed.setBaseValue(0.5);
-        }
 
-        if (health != null) {
-            health.setBaseValue(2000);
-            zombie.setHealth(zombie.getMaxHealth());
-        }
 
-        if (damage != null) {
-            damage.setBaseValue(9);
-        }
 
-        if (atkspeed != null) {
-            atkspeed.setBaseValue(100);
-        }
+        AttributeUtils.changeAttribute(zombie, Attribute.GENERIC_KNOCKBACK_RESISTANCE, 1.0);
+        AttributeUtils.changeAttribute(zombie, Attribute.GENERIC_MAX_HEALTH, 2000);
+        AttributeUtils.changeAttribute(zombie, Attribute.GENERIC_ATTACK_DAMAGE, 18);
+        AttributeUtils.changeAttribute(zombie, Attribute.GENERIC_MOVEMENT_SPEED, 0.5);
 
-        AttributeUtils.changeAttribute(zombie, Attribute.GENERIC_ATTACK_KNOCKBACK, 1.0);
+        zombie.setHealth(zombie.getMaxHealth());
         ParticleCircleUpwards particleCircleUpwards = new ParticleCircleUpwards(zombie, 2, 1, 4);
         particleCircleUpwards.start();
         Location square = zombie.getLocation();
@@ -108,7 +88,14 @@ public class ZombieMob {
             }
         }.runTaskLater(DungeonMobs.plugin, 4 * 20);
 
+        SphereAttack sphereAttack = new SphereAttack(zombie);
+        sphereAttack.startEvent(12, 20);
 
+        BeaconAbility beaconAbility = new BeaconAbility(zombie, summoner);
+        beaconAbility.startEvent(10, 20);
+
+        PetrifyingGaze petrifyingGaze = new PetrifyingGaze(zombie);
+        petrifyingGaze.startEvent(15, 30);
     }
 
 
@@ -169,25 +156,6 @@ public class ZombieMob {
             if (UUID.equals(living)) {
                 double maxHealth = zombie.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
                 double currentHealth = zombie.getHealth() - event.getFinalDamage();
-                if (currentHealth / maxHealth <= abilityThreshold) {
-                    summoner.sendMessage("Picking random num");
-                    int randomNum = Utils.randomNumBetween(0, 3);
-                    summoner.sendMessage("Num: " + randomNum);
-                    switch(randomNum) {
-                        case 1:
-                            SphereAttack sphereAttack = new SphereAttack(zombie);
-                            sphereAttack.trigger();
-                            break;
-                        case 2:
-                            VortexPull vortexPull = new VortexPull(summoner, zombie.getLocation(), 25, 10);
-                            vortexPull.pull();
-                            break;
-                        case 3:
-                            BeaconAbility beaconAbility = new BeaconAbility(zombieMob);
-                            beaconAbility.startEvent();
-                            break;
-                    }
-                }
             }
         }
 

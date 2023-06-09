@@ -18,16 +18,22 @@ public class BeaconAbility {
 
     private final Location location;
     private final Player summoner;
-    private final Zombie mob;
+    private final LivingEntity mob;
 
-    public BeaconAbility(ZombieMob zombieMob) {
-        this.location = zombieMob.getZombie().getLocation();
-        this.mob = zombieMob.getZombie();
-        this.summoner = zombieMob.getSummoner();
+    public BeaconAbility(LivingEntity livingEntity, Player player) {
+        this.location = livingEntity.getLocation();
+        this.mob = livingEntity;
+        this.summoner = player;
     }
 
-    public void startEvent() {
-        createFallingBlock(location);
+    public void startEvent(long startInSeconds, long delayInSeconds) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                BeaconAbility beaconAbility = new BeaconAbility(mob, summoner.getPlayer());
+                beaconAbility.createFallingBlock(mob.getLocation());
+            }
+        }.runTaskTimer(DungeonMobs.plugin, startInSeconds * 20, delayInSeconds * 20); // 100 ticks = 5 seconds
     }
 
     private void throwBeacon(Block block, Location beaconLocation) {
@@ -52,7 +58,6 @@ public class BeaconAbility {
                     }
                     if(timer >= 7) {
                         block.setType(Material.AIR);
-                        mob.remove();
                         summoner.setHealth(0);
                         cancel();
                     }
@@ -77,7 +82,9 @@ public class BeaconAbility {
 
     private int task;
     private void createFallingBlock(Location startLocation) {
-        Location targetLocation = findBeaconLocation(location, 5);
+        Location newLocation = mob.getLocation().clone();
+        if(mob.isDead()) return;
+        Location targetLocation = findBeaconLocation(newLocation, 5);
         startLocation.add(0, 2, 0);
         World world = startLocation.getWorld();
 
@@ -101,8 +108,6 @@ public class BeaconAbility {
             }
         }, 0L, 1L);
     }
-
-
 
 
 }

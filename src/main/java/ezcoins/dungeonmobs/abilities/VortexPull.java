@@ -1,7 +1,10 @@
 package ezcoins.dungeonmobs.abilities;
 
+import ezcoins.dungeonmobs.DungeonMobs;
 import org.bukkit.Location;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 public class VortexPull {
@@ -10,15 +13,30 @@ public class VortexPull {
     private Location location;
     private double pullRadius;
     private double pullStrength;
+    private LivingEntity livingEntity;
 
-    public VortexPull(Player player, Location center, double pullRadius, double pullStrength) {
+    public VortexPull(Player player, LivingEntity livingEntity, double pullRadius, double pullStrength) {
         this.player = player;
-        this.location = center;
+        this.livingEntity = livingEntity;
+        this.location = livingEntity.getLocation();
         this.pullRadius = pullRadius;
         this.pullStrength = pullStrength;
     }
 
-    public void pull() {
+    public void startEvent(long startInSeconds, long delayInSeconds) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                VortexPull vortexPull = new VortexPull(player, livingEntity, 50, 5);
+                vortexPull.pull();
+
+            }
+        }.runTaskTimer(DungeonMobs.plugin, startInSeconds * 20, delayInSeconds * 20); // 100 ticks = 5 seconds
+    }
+
+    private void pull() {
+        if(livingEntity.isDead()) return;
+        DungeonMobs.plugin.getLogger().info("Pulling!");
         Location playerLocation = player.getLocation();
         Vector direction = location.toVector().subtract(playerLocation.toVector()).normalize();
 
@@ -33,4 +51,5 @@ public class VortexPull {
         velocity.add(direction.multiply(strength));
         player.setVelocity(velocity);
     }
+
 }
