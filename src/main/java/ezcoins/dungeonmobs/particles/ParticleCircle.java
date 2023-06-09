@@ -38,7 +38,7 @@ public class ParticleCircle extends BukkitRunnable {
     }
 
     @Override
-    public void run() {
+    public  void run() {
         if (radius > maxRadius) {
             this.cancel();
             return;
