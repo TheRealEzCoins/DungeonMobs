@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class SphereAttack {
+public class SphereAttack implements Ability {
 
     private LivingEntity livingEntity;
 
@@ -21,6 +21,7 @@ public class SphereAttack {
     }
 
 
+    @Override
     public void startEvent(long startInSeconds, long delayInSeconds) {
         new BukkitRunnable() {
             @Override
@@ -32,6 +33,7 @@ public class SphereAttack {
             }
         }.runTaskTimer(DungeonMobs.plugin, startInSeconds * 20, delayInSeconds * 20);
     }
+    @Override
     public void createEvent() {
         if(livingEntity.isDead()) return;
         livingEntity.setAI(false);
@@ -50,6 +52,7 @@ public class SphereAttack {
                 time++;
                 for(Player player : getNearbyPlayers(time)) {
                     if(!playerHurtList.contains(player)) {
+                        if(player.getHealth() < 0) return;
                         player.setHealth(player.getHealth() - (time * 1.5));
                         player.damage(1, livingEntity);
                         player.setHurtDirection(1f);

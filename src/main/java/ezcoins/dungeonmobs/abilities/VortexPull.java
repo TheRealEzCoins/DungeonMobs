@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-public class VortexPull {
+public class VortexPull implements Ability {
 
     private Player player;
     private Location location;
@@ -23,18 +23,20 @@ public class VortexPull {
         this.pullStrength = pullStrength;
     }
 
+    @Override
     public void startEvent(long startInSeconds, long delayInSeconds) {
         new BukkitRunnable() {
             @Override
             public void run() {
                 VortexPull vortexPull = new VortexPull(player, livingEntity, 50, 5);
-                vortexPull.pull();
+                vortexPull.createEvent();
 
             }
         }.runTaskTimer(DungeonMobs.plugin, startInSeconds * 20, delayInSeconds * 20); // 100 ticks = 5 seconds
     }
 
-    private void pull() {
+    @Override
+    public void createEvent() {
         if(livingEntity.isDead()) return;
         DungeonMobs.plugin.getLogger().info("Pulling!");
         Location playerLocation = player.getLocation();

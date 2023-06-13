@@ -1,31 +1,30 @@
 package ezcoins.dungeonmobs.abilities;
 
 import ezcoins.dungeonmobs.DungeonMobs;
-import ezcoins.dungeonmobs.mobs.ZombieMob;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Zombie;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
-public class BeaconAbility {
+import java.util.ArrayList;
+import java.util.List;
 
-    private final Location location;
+public class BeaconAbility implements Ability {
+
+    private static List<Block> activeBeaconAbility = new ArrayList<>();
     private final Player summoner;
     private final LivingEntity mob;
 
     public BeaconAbility(LivingEntity livingEntity, Player player) {
-        this.location = livingEntity.getLocation();
         this.mob = livingEntity;
         this.summoner = player;
     }
 
+    @Override
     public void startEvent(long startInSeconds, long delayInSeconds) {
         new BukkitRunnable() {
             @Override
@@ -36,7 +35,9 @@ public class BeaconAbility {
         }.runTaskTimer(DungeonMobs.plugin, startInSeconds * 20, delayInSeconds * 20); // 100 ticks = 5 seconds
     }
 
-    private void throwBeacon(Block block, Location beaconLocation) {
+    @Override
+    public void createEvent(Block block, Location beaconLocation) {
+        activeBeaconAbility.add(block);
         block.setType(Material.BEACON);
         block.getWorld().strikeLightning(beaconLocation);
         new BukkitRunnable() {
@@ -51,6 +52,7 @@ public class BeaconAbility {
                         Location playerLocation = player.getLocation();
                         if (playerLocation.distance(beaconLocation) <= 2) {
                             block.setType(Material.AIR);
+                            activeBeaconAbility.remove(block);
                             player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1f, 3f);
                             cancel();
                             return;
@@ -58,6 +60,7 @@ public class BeaconAbility {
                     }
                     if(timer >= 7) {
                         block.setType(Material.AIR);
+                        activeBeaconAbility.remove(block);
                         summoner.setHealth(0);
                         cancel();
                     }
@@ -101,12 +104,20 @@ public class BeaconAbility {
         task = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonMobs.plugin, () -> {
             if (fallingBlock.isOnGround()) {
                 Location landedLocation = fallingBlock.getLocation();
-                throwBeacon(fallingBlock.getLocation().getBlock(), landedLocation);
+                createEvent(fallingBlock.getLocation().getBlock(), landedLocation);
 
                 fallingBlock.remove();
                 Bukkit.getScheduler().cancelTask(task);
             }
         }, 0L, 1L);
+    }
+
+    public static void destroyAllBeacons() {
+        for(Block block : activeBeaconAbility) {
+            if(block.getType().equals(Material.BEACON)) {
+                block.setType(Material.AIR);
+            }
+        }
     }
 
 

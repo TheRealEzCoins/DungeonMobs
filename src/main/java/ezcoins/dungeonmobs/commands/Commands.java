@@ -1,6 +1,8 @@
 package ezcoins.dungeonmobs.commands;
 
+import ezcoins.dungeonmobs.mobs.CustomEntity;
 import ezcoins.dungeonmobs.mobs.ZombieMob;
+import ezcoins.dungeonmobs.tasks.HealthBar;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -15,6 +17,8 @@ public class Commands implements CommandExecutor {
                 Player player = (Player) sender;
                 ZombieMob zombieMob = new ZombieMob(player.getLocation(), player);
                 zombieMob.spawnMob();
+            } else if(args[0].equalsIgnoreCase("kill")) {
+                CustomEntity.killAllEntity();
             }
         }
         return true;

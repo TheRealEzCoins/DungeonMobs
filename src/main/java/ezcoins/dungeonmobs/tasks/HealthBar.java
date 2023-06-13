@@ -17,9 +17,12 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
 
 public class HealthBar implements Listener {
 
+    private static List<ArmorStand> activeHealthBar = new ArrayList<>();
     private LivingEntity livingEntity;
     private ArmorStand armorStand;
 
@@ -34,15 +37,24 @@ public class HealthBar implements Listener {
         armorStand.addEquipmentLock(EquipmentSlot.HEAD, ArmorStand.LockType.REMOVING_OR_CHANGING);
         armorStand.setMetadata("interactable_armorstand", new FixedMetadataValue(DungeonMobs.plugin, true));
         armorStand.setCustomNameVisible(true);
-        armorStand.setCustomName("Health: " + livingEntity.getHealth() + "/" + livingEntity.getMaxHealth());
+        armorStand.setCustomName("§c" + livingEntity.getHealth() + "❤");
 
         livingEntity.addPassenger(armorStand);
 
+        activeHealthBar.add(armorStand);
         registerListener();
     }
 
     private void registerListener() {
         DungeonMobs.getPluginManager().registerEvents(new ZombieHitListener(), DungeonMobs.plugin);
+    }
+
+    public static void removeAllHealthBars() {
+        for(ArmorStand activeArmorstand : activeHealthBar) {
+            activeArmorstand.remove();
+        }
+
+        activeHealthBar.clear();
     }
 
     private class ZombieHitListener implements Listener {
@@ -55,7 +67,7 @@ public class HealthBar implements Listener {
             if (UUID.equals(living)) {
                 LivingEntity updated = (LivingEntity) entity;
                 BigDecimal bigDecimal = new BigDecimal(updated.getHealth() - event.getFinalDamage()).setScale(0, RoundingMode.CEILING);
-                armorStand.setCustomName("Health: " + bigDecimal + "/" + updated.getMaxHealth());
+                armorStand.setCustomName("§c" + bigDecimal + "❤");
             }
         }
 
@@ -66,6 +78,7 @@ public class HealthBar implements Listener {
             String UUID = entity.getPersistentDataContainer().get(new NamespacedKey(DungeonMobs.plugin, "UUID"), PersistentDataType.STRING);
             String living = livingEntity.getPersistentDataContainer().get(new NamespacedKey(DungeonMobs.plugin, "UUID"), PersistentDataType.STRING);
             if (UUID.equals(living)) {
+                activeHealthBar.remove(armorStand);
                 armorStand.remove();
             }
         }

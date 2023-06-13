@@ -4,6 +4,7 @@ import com.google.common.io.MoreFiles;
 import dev.dbassett.skullcreator.SkullCreator;
 import ezcoins.dungeonmobs.DungeonMobs;
 import ezcoins.dungeonmobs.abilities.*;
+import ezcoins.dungeonmobs.animations.SpawnAnimationCube;
 import ezcoins.dungeonmobs.particles.ParticleCircle;
 import ezcoins.dungeonmobs.particles.ParticleCircleUpwards;
 import ezcoins.dungeonmobs.particles.ParticleCube;
@@ -32,37 +33,30 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.UUID;
 
-public class ZombieMob {
+public class ZombieMob extends CustomEntity {
     @Getter
     private final Location location;
 
     @Getter
     private final Zombie zombie;
-    @Getter
-    private final Player summoner;
-    @Getter
-    private final UUID uuid;
 
     @Getter
     private ZombieMob zombieMob;
 
     public ZombieMob(Location location, Player player) {
-        this.summoner = player;
+        super(EntityType.ZOMBIE, player);
         this.location = location;
-        this.zombie = (Zombie) location.getWorld().spawnEntity(location, EntityType.ZOMBIE);
-        this.uuid = UUID.randomUUID();
-        zombie.getPersistentDataContainer().set(new NamespacedKey(DungeonMobs.plugin, "UUID"), PersistentDataType.STRING, uuid.toString());
+        this.zombie = (Zombie) getLivingEntity();
         zombieMob = this;
         registerListener();
-    }
-
-    public void spawnMob() {
 
         zombie.setShouldBurnInDay(false);
         zombie.setAI(false);
         zombie.setAdult();
+        zombie.setArrowCooldown(0);
+    }
 
-
+    public void spawnMob() {
 
         AttributeUtils.changeAttribute(zombie, Attribute.GENERIC_KNOCKBACK_RESISTANCE, 1.0);
         AttributeUtils.changeAttribute(zombie, Attribute.GENERIC_MAX_HEALTH, 2000);
@@ -70,28 +64,17 @@ public class ZombieMob {
         AttributeUtils.changeAttribute(zombie, Attribute.GENERIC_MOVEMENT_SPEED, 0.5);
 
         zombie.setHealth(zombie.getMaxHealth());
-        ParticleCircleUpwards particleCircleUpwards = new ParticleCircleUpwards(zombie, 2, 1, 4);
-        particleCircleUpwards.start();
-        Location square = zombie.getLocation();
-        square.add(0, 1, 0);
-        ParticleCube particleSquare = new ParticleCube(square, 1, 5, 4);
-        particleSquare.start();
+
+        SpawnAnimationCube spawnAnimationCube = new SpawnAnimationCube(getLivingEntity(), getSummoner());
+
+        spawnAnimationCube.startAnimation();
+
         equipArmor();
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (zombie.isValid()) {
-                    HealthBar healthBar = new HealthBar(zombie);
-                    zombie.setSilent(false);
-                    zombie.setAI(true);
-                }
-            }
-        }.runTaskLater(DungeonMobs.plugin, 4 * 20);
 
         SphereAttack sphereAttack = new SphereAttack(zombie);
         sphereAttack.startEvent(12, 20);
 
-        BeaconAbility beaconAbility = new BeaconAbility(zombie, summoner);
+        BeaconAbility beaconAbility = new BeaconAbility(zombie, getSummoner());
         beaconAbility.startEvent(10, 20);
 
         PetrifyingGaze petrifyingGaze = new PetrifyingGaze(zombie);
@@ -128,6 +111,7 @@ public class ZombieMob {
                             break;
                         case 3:
                             zombie.getEquipment().setHelmet(armorPiece);
+                            zombie.setInvisible(true);
                             break;
                     }
                     currentIndex++;
@@ -148,14 +132,15 @@ public class ZombieMob {
     private class ZombieAbilityListener implements Listener {
         @EventHandler
         public void onZombieHit(EntityDamageByEntityEvent event) {
-            double abilityThreshold = 0.2;
             Entity entity = event.getEntity();
             if (!entity.getPersistentDataContainer().has(new NamespacedKey(DungeonMobs.plugin, "UUID"))) return;
             String UUID = entity.getPersistentDataContainer().get(new NamespacedKey(DungeonMobs.plugin, "UUID"), PersistentDataType.STRING);
             String living = zombie.getPersistentDataContainer().get(new NamespacedKey(DungeonMobs.plugin, "UUID"), PersistentDataType.STRING);
             if (UUID.equals(living)) {
-                double maxHealth = zombie.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
-                double currentHealth = zombie.getHealth() - event.getFinalDamage();
+                if (event.getDamager().getType() == EntityType.ARROW) {
+                    zombie.teleport(getSummoner());
+                    event.setCancelled(true);
+                }
             }
         }
 
