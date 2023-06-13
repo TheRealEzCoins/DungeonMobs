@@ -1,6 +1,7 @@
 package ezcoins.dungeonmobs.commands;
 
 import ezcoins.dungeonmobs.mobs.CustomEntity;
+import ezcoins.dungeonmobs.mobs.WitherSkeletonMob;
 import ezcoins.dungeonmobs.mobs.ZombieMob;
 import ezcoins.dungeonmobs.tasks.HealthBar;
 import org.bukkit.command.Command;
@@ -15,8 +16,9 @@ public class Commands implements CommandExecutor {
 
             } else if (args[0].equalsIgnoreCase("spawn")) {
                 Player player = (Player) sender;
-                ZombieMob zombieMob = new ZombieMob(player.getLocation(), player);
-                zombieMob.spawnMob();
+//                ZombieMob zombieMob = new ZombieMob(player.getLocation(), player);
+//                zombieMob.spawnMob();
+                WitherSkeletonMob witherSkeletonMob = new WitherSkeletonMob(player);
             } else if(args[0].equalsIgnoreCase("kill")) {
                 CustomEntity.killAllEntity();
             }

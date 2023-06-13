@@ -1,6 +1,7 @@
 package ezcoins.dungeonmobs.animations;
 
 import ezcoins.dungeonmobs.DungeonMobs;
+import ezcoins.dungeonmobs.mobs.CustomEntity;
 import ezcoins.dungeonmobs.particles.ParticleCircleUpwards;
 import ezcoins.dungeonmobs.particles.ParticleCube;
 import ezcoins.dungeonmobs.tasks.HealthBar;
@@ -13,10 +14,12 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class SpawnAnimationCube {
     private LivingEntity livingEntity;
+    private CustomEntity customEntity;
 
     private Player player;
-    public SpawnAnimationCube(LivingEntity livingEntity, Player player) {
-        this.livingEntity = livingEntity;
+    public SpawnAnimationCube(CustomEntity customEntity, Player player) {
+        this.livingEntity = customEntity.getLivingEntity();
+        this.customEntity = customEntity;
         this.player = player;
     }
 
@@ -32,7 +35,7 @@ public class SpawnAnimationCube {
             public void run() {
                 if (livingEntity.isValid()) {
                     player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1f, 5f);
-                    HealthBar healthBar = new HealthBar(livingEntity);
+                    HealthBar healthBar = new HealthBar(customEntity);
                     livingEntity.setSilent(false);
                     livingEntity.setAI(true);
                 }

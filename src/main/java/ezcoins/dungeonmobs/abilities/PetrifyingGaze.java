@@ -3,11 +3,9 @@ package ezcoins.dungeonmobs.abilities;
 import dev.dbassett.skullcreator.SkullCreator;
 import ezcoins.dungeonmobs.DungeonMobs;
 import ezcoins.dungeonmobs.utils.AttributeUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.FluidCollisionMode;
-import org.bukkit.Location;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -44,15 +42,6 @@ public class PetrifyingGaze implements Listener, Ability {
         return dotProduct > 0.99; // Adjust the dot product threshold as needed for accuracy
     }
 
-    private boolean isPlayerLookingAtHeadRayTracing(Player player) {
-        Location eyeLocation = livingEntity.getLocation().add(0, livingEntity.getEyeHeight(), 0);
-        Location playerEyeLocation = player.getEyeLocation();
-
-        Vector direction = playerEyeLocation.getDirection();
-        double maxDistance = 30;
-        RayTraceResult result = playerEyeLocation.getWorld().rayTrace(playerEyeLocation, direction, maxDistance, FluidCollisionMode.NEVER, true, 0.5, e -> e.equals(livingEntity));
-        return result != null && result.getHitEntity() != null && result.getHitEntity().equals(livingEntity);
-    }
 
     public void startEvent(long startInSeconds, long delayInSeconds) {
         new BukkitRunnable() {
@@ -71,7 +60,7 @@ public class PetrifyingGaze implements Listener, Ability {
         if(livingEntity.isDead()) {
             return;
         }
-        livingEntity.getEquipment().setHelmet(SkullCreator.itemFromBase64("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzE0NWZiMWJiYWFjNWY4NzhjMjlmOWM4NzEyMzE5ODYzNDA2MjM2MWM4NmFjNGFiMTExZGUxOWEzNzliYWEwNiJ9fX0="));
+        livingEntity.getEquipment().setHelmet(SkullCreator.itemFromBase64("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTI2YjcyMGQ1ZjgwMWJhMzRhZGNmODI4NTZmYTNmMjU1ZDQ5OTJiNWExNTJiY2Q2ZGM5MmJjMzQ0NThkMTRmOSJ9fX0="));
         livingEntity.setInvisible(false);
         AttributeUtils.changeAttribute(livingEntity, Attribute.GENERIC_ATTACK_DAMAGE, 36);
         livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_ZOMBIE_VILLAGER_CURE, 1f, -5f);
@@ -80,7 +69,7 @@ public class PetrifyingGaze implements Listener, Ability {
             @Override
             public void run() {
                 if(time >= 100) {
-                    livingEntity.getEquipment().setHelmet(SkullCreator.itemFromBase64("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTkzMzQ4NTMzNWZjOWMzOGFiMzJlNmJkMmNkNDgwYzNiYWY2MWIwZTNmNmJjYTYxZTBlM2NmMWY3NzQ3YzlkYSJ9fX0="));
+                    livingEntity.getEquipment().setHelmet(SkullCreator.itemFromBase64("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWQ5MjhjY2I3Y2Y3NTg0MjVlYTM4YTVkNjBiZGE1MTY5ZjdkZmRhZjQyMTQ2Mzc0ZjllOWM5OTMyMDJmYTFiZSJ9fX0="));
                     AttributeUtils.changeAttribute(livingEntity, Attribute.GENERIC_ATTACK_DAMAGE, 18);
                     livingEntity.setInvisible(true);
                     livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_ZOMBIE_VILLAGER_CONVERTED, 1f, 5f);
@@ -101,6 +90,7 @@ public class PetrifyingGaze implements Listener, Ability {
     private void petrifyPlayer(Player player) {
         if(petrifiedPlayers.contains(player.getUniqueId())) return;
         petrifiedPlayers.add(player.getUniqueId());
+
         player.setAllowFlight(true);
         player.setFlying(true);
         player.sendMessage("You've been petrified!");

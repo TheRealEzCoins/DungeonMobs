@@ -1,6 +1,7 @@
 package ezcoins.dungeonmobs.mobs;
 
 import ezcoins.dungeonmobs.DungeonMobs;
+import ezcoins.dungeonmobs.abilities.FrostCircle;
 import ezcoins.dungeonmobs.tasks.HealthBar;
 import lombok.Getter;
 import org.bukkit.NamespacedKey;
@@ -13,7 +14,7 @@ import org.bukkit.persistence.PersistentDataType;
 import java.util.HashMap;
 import java.util.UUID;
 
-public abstract class CustomEntity {
+public abstract class CustomEntity  {
     @Getter
     private static HashMap<UUID, CustomEntity> activeBosses = new HashMap<>();
     @Getter
@@ -22,9 +23,13 @@ public abstract class CustomEntity {
     private final Player summoner;
     @Getter
     private final UUID uuid;
+    @Getter
+    private String name;
 
-    public CustomEntity(EntityType entityType, Player summoner) {
-        this.livingEntity = (LivingEntity) summoner.getWorld().spawnEntity(summoner.getLocation(), entityType);;
+
+    public CustomEntity(String name, EntityType entityType, Player summoner) {
+        this.livingEntity = (LivingEntity) summoner.getWorld().spawnEntity(summoner.getLocation(), entityType);
+        this.name = name;
         this.summoner = summoner;
         this.uuid = UUID.randomUUID();
         Entity entityHandle = livingEntity;
@@ -35,8 +40,12 @@ public abstract class CustomEntity {
 
     public static void killAllEntity() {
         for(CustomEntity customEntity : activeBosses.values()) {
+            for(Entity living : customEntity.getLivingEntity().getPassengers()) {
+                living.remove();
+            }
             customEntity.getLivingEntity().remove();
         }
+        FrostCircle.forceClean();
         HealthBar.removeAllHealthBars();
         activeBosses.clear();
     }

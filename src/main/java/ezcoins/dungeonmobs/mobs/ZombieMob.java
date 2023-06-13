@@ -44,7 +44,7 @@ public class ZombieMob extends CustomEntity {
     private ZombieMob zombieMob;
 
     public ZombieMob(Location location, Player player) {
-        super(EntityType.ZOMBIE, player);
+        super("§bGlacialus, the Frostbound Tyrant", EntityType.ZOMBIE, player);
         this.location = location;
         this.zombie = (Zombie) getLivingEntity();
         zombieMob = this;
@@ -65,7 +65,7 @@ public class ZombieMob extends CustomEntity {
 
         zombie.setHealth(zombie.getMaxHealth());
 
-        SpawnAnimationCube spawnAnimationCube = new SpawnAnimationCube(getLivingEntity(), getSummoner());
+        SpawnAnimationCube spawnAnimationCube = new SpawnAnimationCube(this, getSummoner());
 
         spawnAnimationCube.startAnimation();
 
@@ -73,6 +73,9 @@ public class ZombieMob extends CustomEntity {
 
         SphereAttack sphereAttack = new SphereAttack(zombie);
         sphereAttack.startEvent(12, 20);
+
+        FrostCircle frostCircle = new FrostCircle(10, 5, this);
+        frostCircle.startEvent(12, 20);
 
         BeaconAbility beaconAbility = new BeaconAbility(zombie, getSummoner());
         beaconAbility.startEvent(10, 20);
@@ -87,9 +90,9 @@ public class ZombieMob extends CustomEntity {
     public void equipArmor() {
         ItemStack[] armorContents = new ItemStack[] {
                 new ItemStack(Material.DIAMOND_BOOTS),
-                ArmorUtils.colorArmorPiece(new ItemStack(Material.LEATHER_LEGGINGS), Color.BLACK),
-                ArmorUtils.colorArmorPiece(new ItemStack(Material.LEATHER_CHESTPLATE), Color.BLACK),
-                SkullCreator.itemFromBase64("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTkzMzQ4NTMzNWZjOWMzOGFiMzJlNmJkMmNkNDgwYzNiYWY2MWIwZTNmNmJjYTYxZTBlM2NmMWY3NzQ3YzlkYSJ9fX0=")
+                ArmorUtils.colorArmorPiece(new ItemStack(Material.LEATHER_LEGGINGS), Color.AQUA),
+                ArmorUtils.colorArmorPiece(new ItemStack(Material.LEATHER_CHESTPLATE), Color.AQUA),
+                SkullCreator.itemFromBase64("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWQ5MjhjY2I3Y2Y3NTg0MjVlYTM4YTVkNjBiZGE1MTY5ZjdkZmRhZjQyMTQ2Mzc0ZjllOWM5OTMyMDJmYTFiZSJ9fX0=")
         };
 
         new BukkitRunnable() {
